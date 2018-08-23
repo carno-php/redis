@@ -1,0 +1,17 @@
+language: php
+
+php:
+- '7.2'
+
+services:
+- redis-server
+
+before_install:
+- sudo apt-get install -y libhiredis-dev
+
+install:
+- printf "\n\n\n\nyes\n\n\n" | pecl install swoole
+- composer install
+
+script:
+- php tests/cluster.php
