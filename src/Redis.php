@@ -14,7 +14,8 @@ use Carno\Pool\Managed;
 use Carno\Pool\Poolable;
 use Carno\Promise\Promise;
 use Carno\Promise\Promised;
-use Carno\Redis\Chips\PRCompatible;
+use Carno\Redis\Chips\Compatible;
+use Carno\Redis\Chips\Subscriber;
 use Carno\Redis\Exception\CommandException;
 use Carno\Redis\Exception\ConnectingException;
 use Carno\Redis\Exception\TimeoutException;
@@ -24,10 +25,14 @@ use Carno\Tracing\Contracts\Vars\TAG;
 use Carno\Tracing\Standard\Endpoint;
 use Carno\Tracing\Utils\SpansCreator;
 use Swoole\Redis as SWRedis;
+use Redis as PRedis;
 
+/**
+ * @mixin PRedis
+ */
 class Redis implements Poolable
 {
-    use Managed, SpansCreator, PRCompatible;
+    use Managed, SpansCreator, Compatible, Subscriber;
 
     /**
      * @var Timeouts
@@ -110,6 +115,10 @@ class Redis implements Poolable
             $this->closed()->resolve();
         });
 
+        $this->link->on('message', function (SWRedis $c, array $recv) {
+            $this->messaging($recv);
+        });
+
         return new Promise(function (Promised $promise) {
             $executed = $this->link->connect(
                 $this->host,
@@ -158,6 +167,10 @@ class Redis implements Poolable
      */
     public function __call($name, $arguments)
     {
+        if ($this->subscribed()) {
+            throw new CommandException(sprintf('Subscribe state cannot issue "%s"', $name));
+        }
+
         $this->traced() && $this->newSpan($ctx = clone yield ctx(), $name, [
             TAG::SPAN_KIND => TAG::SPAN_KIND_RPC_CLIENT,
             TAG::DATABASE_TYPE => 'redis',
@@ -168,9 +181,7 @@ class Redis implements Poolable
 
         $executor = function ($fn) use ($name, $arguments) {
             array_push($arguments, $fn);
-            if (false === $this->link->__call($name, $arguments)) {
-                throw new UplinkException('Unknown failure');
-            }
+            $this->command($name, $arguments);
         };
 
         $receiver = static function (SWRedis $c, $result) {
@@ -191,5 +202,16 @@ class Redis implements Poolable
             ),
             $ctx ?? null
         );
+    }
+
+    /**
+     * @param string $name
+     * @param array $arguments
+     */
+    private function command(string $name, array $arguments) : void
+    {
+        if (false === $this->link->__call($name, $arguments)) {
+            throw new UplinkException('Unknown failure');
+        }
     }
 }

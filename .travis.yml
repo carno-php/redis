@@ -6,12 +6,27 @@ php:
 services:
 - redis-server
 
+dist: trusty
+sudo: false
+
+addons:
+  apt:
+    packages:
+    - libhiredis-dev
+
+cache:
+  directories:
+  - ~/.composer
+  - ~/.php-ext
+
 before_install:
-- sudo apt-get install -y libhiredis-dev
+- source <(curl -sL https://github.com/carno-php/travis-ci/raw/master/tests-prepare.sh)
 
 install:
-- printf "\n\n\n\nyes\n\n\n" | pecl install swoole
-- composer install
+- composer update
 
 script:
-- php tests/cluster.php
+- testing
+
+after_success:
+- coveralls

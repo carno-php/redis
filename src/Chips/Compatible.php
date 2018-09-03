@@ -1,6 +1,6 @@
 <?php
 /**
- * PHPRedis compatible
+ * PHP Redis compatible
  * User: moyo
  * Date: 23/02/2018
  * Time: 2:30 PM
@@ -8,7 +8,7 @@
 
 namespace Carno\Redis\Chips;
 
-trait PRCompatible
+trait Compatible
 {
     /**
      * @param string $key
@@ -48,7 +48,7 @@ trait PRCompatible
      * @param array $map
      * @return bool
      */
-    public function hmset(string $key, array $map)
+    public function hMSet(string $key, array $map)
     {
         $args = [$key];
 
@@ -64,7 +64,7 @@ trait PRCompatible
      * @param array $fds
      * @return array
      */
-    public function hmget(string $key, array $fds)
+    public function hMGet(string $key, array $fds)
     {
         $args = $fds;
 
@@ -85,7 +85,7 @@ trait PRCompatible
      * @param string $key
      * @return array
      */
-    public function hgetall(string $key)
+    public function hGetAll(string $key)
     {
         $got = yield $this->__call('hgetall', [$key]);
 

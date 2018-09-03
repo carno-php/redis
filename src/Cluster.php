@@ -19,6 +19,9 @@ use Carno\Pool\Wrapper\SAR;
 use Carno\Promise\Promised;
 use Carno\Redis\Utils\Commands;
 
+/**
+ * @mixin Redis
+ */
 abstract class Cluster extends Managed
 {
     use SAR;

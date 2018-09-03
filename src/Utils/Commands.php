@@ -1,6 +1,6 @@
 <?php
 /**
- * Commands
+ * Commands recognize
  * User: moyo
  * Date: 25/10/2017
  * Time: 3:12 PM
@@ -59,6 +59,6 @@ class Commands
      */
     public static function readonly(string $cmd) : bool
     {
-        return in_array($cmd, self::RO_CMDS);
+        return in_array(strtolower($cmd), self::RO_CMDS);
     }
 }

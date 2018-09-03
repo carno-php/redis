@@ -4,6 +4,7 @@
   "require": {
     "carno-php/coroutine": "^1.0",
     "carno-php/promise": "^1.0",
+    "carno-php/channel": "^1.0",
     "carno-php/tracing": "^1.0",
     "carno-php/cluster": "^1.0",
     "carno-php/pool": "^1.0",
@@ -17,6 +18,11 @@
   "autoload": {
     "psr-4": {
       "Carno\\Redis\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Carno\\Redis\\Tests\\": "tests"
     }
   },
   "minimum-stability": "dev",
