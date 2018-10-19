@@ -56,10 +56,10 @@ abstract class Cluster extends Managed
     }
 
     /**
-     * @param string $service
+     * @param Endpoint $endpoint
      * @return Options
      */
-    abstract protected function options(string $service) : Options;
+    abstract protected function options(Endpoint $endpoint) : Options;
 
     /**
      * @param Endpoint $endpoint
@@ -82,7 +82,7 @@ abstract class Cluster extends Managed
             $dsn->option('execute', $this->timeout)
         );
 
-        return new Pool($this->options($endpoint->service()), static function () use ($timeouts, $dsn, $vid) {
+        return new Pool($this->options($endpoint), static function () use ($timeouts, $dsn, $vid) {
             return new Redis(
                 sprintf('%s:%d', $dsn->host(), $dsn->port()),
                 $dsn->pass() ?: null,

@@ -11,6 +11,7 @@ namespace Carno\Redis\Tests;
 use Carno\Cluster\Discover\Adaptors\DNS;
 use Carno\Cluster\Resources;
 use function Carno\Coroutine\async;
+use Carno\Net\Endpoint;
 use Carno\Pool\Options;
 use Carno\Redis\Cluster;
 use PHPUnit\Framework\TestCase;
@@ -34,7 +35,7 @@ class ClusterTest extends TestCase
         return $this->redis ?? $this->redis = new class($cluster) extends Cluster {
             protected $server = 'localhost';
             protected $timeout = 500;
-            protected function options(string $service) : Options
+            protected function options(Endpoint $endpoint) : Options
             {
                 return new Options;
             }
