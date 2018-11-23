@@ -8,6 +8,7 @@
 
 namespace Carno\Redis;
 
+use Carno\Cluster\Classify\Scenes;
 use Carno\Cluster\Contracts\Tags;
 use Carno\Cluster\Managed;
 use Carno\Cluster\Resources;
@@ -52,7 +53,7 @@ abstract class Cluster extends Managed
      */
     public function __construct(Resources $resources)
     {
-        $resources->initialize($this->type, $this->server, $this);
+        $resources->initialize(Scenes::RESOURCE, $this->type, $this->server, $this);
     }
 
     /**
@@ -72,7 +73,7 @@ abstract class Cluster extends Managed
         $vid = "{$this->type}:{$this->server}";
 
         $dsn = new DSN(
-            $node->port() === 0
+            $node->port() <= 0
                 ? $node->host()
                 : sprintf('redis://%s:%d', $node->host(), $node->port())
         );

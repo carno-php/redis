@@ -8,7 +8,9 @@
 
 namespace Carno\Redis\Tests;
 
-use Carno\Cluster\Discover\Adaptors\DNS;
+use Carno\Cluster\Classify\Scenes;
+use Carno\Cluster\Classify\Selector;
+use Carno\Cluster\Discovery\Adaptors\DNS;
 use Carno\Cluster\Resources;
 use function Carno\Coroutine\async;
 use Carno\Net\Endpoint;
@@ -26,7 +28,8 @@ class ClusterTest extends TestCase
 
     private function cluster()
     {
-        return $this->cluster ?? $this->cluster = new Resources(new DNS);
+        ($s = new Selector)->assigning(Scenes::RESOURCE, new DNS);
+        return $this->cluster ?? $this->cluster = new Resources($s);
     }
 
     private function redis()
